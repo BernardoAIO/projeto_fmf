@@ -2,6 +2,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import json
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -100,35 +101,70 @@ def extract_product_name_from_url(page_url):
         return None
 
 
+
+def read_products_from_json(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            products = json.load(file)
+            return products
+    except FileNotFoundError:
+        print(f"O arquivo '{file_path}' não foi encontrado.")
+        return []
+
+def remove_duplicate_products(products):
+    unique_products = []
+    seen_products = set()
+    for product in products:
+        product_tuple = (product['link'], product['modelo'], product['marca'])
+        if product_tuple not in seen_products:
+            seen_products.add(product_tuple)
+            unique_products.append(product)
+    return unique_products
+
+
 if __name__ == '__main__':
-    url = 'https://www.mercadolivre.com.br/xiaomi-redmi-note-10s-dual-sim-128-gb-onyx-gray-6-gb-ram/p/MLB18027052' \
-          '?pdp_filters=official_store:1553#reviews '
 
-    marca = 'Xiaomi'
+    file_path = 'links_seguranca.json'  # Substitua pelo caminho do seu arquivo JSON
 
-    modelo = 'Note 10S'
+    products = read_products_from_json(file_path)
+    unique_products = remove_duplicate_products(products)
 
-    page_loc = f'pages/note10s.html'
+    for product in unique_products:
 
-    product_name = extract_product_name_from_url(url)
+        url = product['link']
 
-    marca = marca.lower()
+        marca = product['marca']
 
-    modelo = modelo.lower()
+        modelo = product['modelo']
 
-    soup = html_code(page_loc)
+        product_name = extract_product_name_from_url(url)
 
-    # cus_res = cus_data(soup)
-    rev_data = cus_rev(soup, product_name, url, marca, modelo)
-    # print(rev_data)
+        page_loc = f'pages/{product_name}.html'
 
-    # print(cus_res)
-    # print(rev_data)
+        marca = marca.lower()
 
-    # Create a DataFrame from a list of dictionaries
-    df = pd.DataFrame(rev_data)
+        modelo = modelo.lower()
+        try:
+            soup = html_code(page_loc)
+        except:
+            print(f"Não foi possível ler o arquivo '{page_loc}'")
+            continue
 
-    # Save the DataFrame to a CSV file on "output_tables" folder
-    df.to_csv(f'output_tables/{marca}_{modelo}.csv', index=False, encoding='utf-8-sig')
+        # cus_res = cus_data(soup)
+        rev_data = cus_rev(soup, product_name, url, marca, modelo)
+        # print(rev_data)
 
-    print('CSV file saved successfully!')
+        # print(cus_res)
+        # print(rev_data)
+
+        # Create a DataFrame from a list of dictionaries
+        df = pd.DataFrame(rev_data)
+
+        # Mostras a descrição do DataFrame
+        # print('DataFrame description:')
+        # print(df.describe())
+
+        # Save the DataFrame to a CSV file on "output_tables_test" folder
+        df.to_csv(f'output_tables/{product_name}.csv', index=False, encoding='utf-8-sig')
+
+        print('CSV file saved successfully!')
