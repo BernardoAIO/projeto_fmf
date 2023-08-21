@@ -7,7 +7,7 @@
 Quais os sentimentos predominantes de cada personagem de Avatar?
 
 # Pergunta do nosso Projeto
-Qual o sentimento predominante dos compradores do Mercado Livre
+Qual o sentimento predominante dos compradores da MobCom do Mercado Livre
 
 ## Autores
 * Bernardo Aires de Oliveira
