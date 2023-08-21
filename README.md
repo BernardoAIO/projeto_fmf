@@ -6,6 +6,9 @@
 # Pergunta do Projeto FMF
 Quais os sentimentos predominantes de cada personagem de Avatar?
 
+# Pergunta do nosso Projeto
+Qual o sentimento predominante dos compradores do Mercado Livre
+
 ## Autores
 * Bernardo Aires de Oliveira
 * Daniel Machado Pedrozo
